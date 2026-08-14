@@ -1,17 +1,17 @@
 {
-  "recipientName": "shal",
-  "landingTitle": "Special Surprise for shal",
+  "recipientName": "[NAME]",
+  "landingTitle": "I have a little surprise for you… 🎁",
   "landingButtonText": "Open Your Surprise ❤️",
   "countdownMessages": [
     "Preparing something special...",
     "Counting down to magic...",
     "Get ready for a heartwarming journey..."
   ],
-  "mainGreeting": "Happy Birthday shal",
+  "mainGreeting": "Happy Birthday, [NAME] 🎂❤️",
   "emotionalMessage": "On this extraordinarily beautiful day, I want to remind you how deeply special you are to me. You bring warmth into my world, light up my darkest nights, and turn everyday moments into precious memories. May your birthday be as glowing, magical, and unforgettable as your smile. I love you to the moon and back! ✨💖",
   "audio": {
-    "title": "Kalyani - Shreya Ghoshal 🎵",
-    "customUrl": "audio/kalyani.mp3",
+    "title": "Romantic Birthday Melody 🎵",
+    "customUrl": "",
     "autoplay": true
   },
   "gallery": [
@@ -77,5 +77,5 @@
   "cakeWishText": "Make a wish and blow out the candles! May all your dreams come true ✨",
   "finalSectionTitle": "You are very special to me ❤️",
   "finalSectionMessage": "No words in any language could ever fully express how much happiness you bring into my life. Happy Birthday my love! Today, tomorrow, and forever.",
-  "secretVideoUrl": "https://www.youtube.com/embed/YyepU5ztLf4?autoplay=1"
+  "secretVideoUrl": "https://www.youtube.com/embed/EThWWliR63w?autoplay=1&rel=0"
 }
