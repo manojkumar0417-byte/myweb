@@ -334,6 +334,41 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (loveNoteCloseBtn) {
     loveNoteCloseBtn.addEventListener('click', () => loveNoteModal.classList.add('hidden'));
   }
+  if (loveNoteModal) {
+    loveNoteModal.addEventListener('click', (e) => {
+      if (e.target === loveNoteModal) loveNoteModal.classList.add('hidden');
+    });
+  }
+
+  // Secret Heart Button → Video Modal
+  const secretHeartBtn = document.getElementById('secret-heart-btn');
+  const secretVideoModal = document.getElementById('secret-video-modal');
+  const secretVideoCloseBtn = document.getElementById('secret-video-close-btn');
+  const secretVideoIframe = document.getElementById('secret-video-iframe');
+
+  if (secretHeartBtn) {
+    secretHeartBtn.addEventListener('click', () => {
+      const videoUrl = (surpriseData && surpriseData.secretVideoUrl) || '';
+      if (secretVideoIframe) secretVideoIframe.src = videoUrl;
+      loveNoteModal.classList.add('hidden');
+      if (secretVideoModal) secretVideoModal.classList.remove('hidden');
+      confettiEngine.burst(60);
+    });
+  }
+  if (secretVideoCloseBtn) {
+    secretVideoCloseBtn.addEventListener('click', () => {
+      if (secretVideoIframe) secretVideoIframe.src = ''; // stop video
+      secretVideoModal.classList.add('hidden');
+    });
+  }
+  if (secretVideoModal) {
+    secretVideoModal.addEventListener('click', (e) => {
+      if (e.target === secretVideoModal) {
+        if (secretVideoIframe) secretVideoIframe.src = '';
+        secretVideoModal.classList.add('hidden');
+      }
+    });
+  }
 
   // Customizer Modal Handlers
   if (customizeTriggerBtn) {

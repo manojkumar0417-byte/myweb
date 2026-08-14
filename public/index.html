@@ -256,6 +256,13 @@
   <div class="modal-overlay hidden" id="love-note-modal">
     <div class="love-note-content glass-card">
       <button class="modal-close-btn" id="love-note-close-btn">&times;</button>
+
+      <!-- Secret Heart Video Button (corner) -->
+      <button class="secret-heart-btn" id="secret-heart-btn" title="A special surprise awaits...">
+        <span class="secret-heart-pulse">💖</span>
+        <span class="secret-heart-label">secret</span>
+      </button>
+
       <div class="secret-envelope-header">
         <i class="fa-solid fa-heart envelope-heart"></i>
         <h3>A Secret Note For You</h3>
@@ -263,6 +270,30 @@
       <div class="secret-note-body">
         <p>“You are my today and all of my tomorrows. Thank you for being the most incredible part of my life. Keep glowing!”</p>
       </div>
+    </div>
+  </div>
+
+  <!-- SECRET VIDEO MODAL -->
+  <div class="modal-overlay hidden" id="secret-video-modal">
+    <div class="secret-video-card glass-card">
+      <button class="modal-close-btn" id="secret-video-close-btn">&times;</button>
+      <div class="secret-video-header">
+        <span class="secret-video-badge">💖 A Special Surprise Just For You 💖</span>
+        <h3 class="secret-video-title">Watch This, My Love 🎬</h3>
+      </div>
+      <div class="secret-video-wrapper">
+        <iframe
+          id="secret-video-iframe"
+          src=""
+          width="100%"
+          height="360"
+          frameborder="0"
+          allow="autoplay; encrypted-media; fullscreen"
+          allowfullscreen
+          title="Secret Surprise Video"
+        ></iframe>
+      </div>
+      <p class="secret-video-caption">Every frame reminds me of how much I love you ❤️</p>
     </div>
   </div>
 
