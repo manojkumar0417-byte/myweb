@@ -353,12 +353,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       loveNoteModal.classList.add('hidden');
       if (secretVideoModal) secretVideoModal.classList.remove('hidden');
       confettiEngine.burst(60);
+      // Pause background music while video plays
+      audioController.stopAudio();
     });
   }
   if (secretVideoCloseBtn) {
     secretVideoCloseBtn.addEventListener('click', () => {
       if (secretVideoIframe) secretVideoIframe.src = ''; // stop video
       secretVideoModal.classList.add('hidden');
+      // Resume background music after video closes
+      audioController.startAudio();
     });
   }
   if (secretVideoModal) {
@@ -366,6 +370,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (e.target === secretVideoModal) {
         if (secretVideoIframe) secretVideoIframe.src = '';
         secretVideoModal.classList.add('hidden');
+        // Resume background music after video closes
+        audioController.startAudio();
       }
     });
   }
