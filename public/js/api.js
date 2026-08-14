@@ -12,14 +12,29 @@ const ApiService = {
       if (!response.ok) {
         throw new Error('Failed to fetch surprise data');
       }
-      return await response.json();
+      const data = await response.json();
+      localStorage.setItem('birthdaySurpriseData', JSON.stringify(data));
+      return data;
     } catch (err) {
-      console.warn('API fetch error, using client fallback defaults:', err);
+      console.warn('API fetch error, attempting local storage fallback:', err);
+      const local = localStorage.getItem('birthdaySurpriseData');
+      if (local) {
+        try {
+          return JSON.parse(local);
+        } catch (e) {}
+      }
       return this.getDefaultFallbackData();
     }
   },
 
   async updateSurpriseData(data) {
+    // Always persist to local storage first
+    try {
+      localStorage.setItem('birthdaySurpriseData', JSON.stringify(data));
+    } catch (e) {
+      console.warn('Failed to save to localStorage:', e);
+    }
+
     try {
       const response = await fetch(`${this.baseUrl}/surprise`, {
         method: 'POST',
@@ -29,16 +44,19 @@ const ApiService = {
         body: JSON.stringify(data)
       });
       if (!response.ok) {
-        throw new Error('Failed to save surprise data');
+        console.warn('Backend server returned non-ok status, fallback to client storage');
+      } else {
+        return await response.json();
       }
-      return await response.json();
     } catch (err) {
-      console.error('API update error:', err);
-      throw err;
+      console.warn('API update endpoint unreachable, data saved locally in browser:', err);
     }
+    return { success: true, message: 'Surprise updated locally!', data };
   },
 
   async resetSurpriseData() {
+    localStorage.removeItem('birthdaySurpriseData');
+    const defaultData = this.getDefaultFallbackData();
     try {
       const response = await fetch(`${this.baseUrl}/reset`, {
         method: 'POST',
@@ -46,14 +64,13 @@ const ApiService = {
           'Content-Type': 'application/json'
         }
       });
-      if (!response.ok) {
-        throw new Error('Failed to reset surprise data');
+      if (response.ok) {
+        return await response.json();
       }
-      return await response.json();
     } catch (err) {
-      console.error('API reset error:', err);
-      throw err;
+      console.warn('API reset endpoint unreachable, reset locally:', err);
     }
+    return { success: true, message: 'Reset to default data successfully!', data: defaultData };
   },
 
   getDefaultFallbackData() {

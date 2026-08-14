@@ -58,6 +58,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Replace Name placeholders
     const name = data.recipientName || '[NAME]';
+
+    // Landing Screen elements
+    const landingTitleEl = document.getElementById('landing-title-text');
+    if (landingTitleEl && data.landingTitle) {
+      landingTitleEl.textContent = data.landingTitle.replace(/\[NAME\]/g, name);
+    }
+    const landingBtnEl = document.getElementById('landing-btn-text');
+    if (landingBtnEl && data.landingButtonText) {
+      landingBtnEl.textContent = data.landingButtonText.replace(/\[NAME\]/g, name);
+    }
     
     // Header & Greeting
     const mainGreeting = document.getElementById('display-main-greeting');
@@ -95,8 +105,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Render Polaroid Gallery Cards
   function renderGallery(items) {
     const grid = document.getElementById('polaroid-grid');
+    const dotsContainer = document.getElementById('gallery-dots');
+    const prevBtn = document.getElementById('gallery-scroll-left');
+    const nextBtn = document.getElementById('gallery-scroll-right');
+
     if (!grid || !items) return;
     grid.innerHTML = '';
+    if (dotsContainer) dotsContainer.innerHTML = '';
 
     const rotations = [-3, 2, -2, 4, -4, 3];
 
@@ -121,7 +136,51 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       grid.appendChild(card);
+
+      // Create Dot Indicator
+      if (dotsContainer) {
+        const dot = document.createElement('span');
+        dot.className = `gallery-dot ${index === 0 ? 'active' : ''}`;
+        dot.setAttribute('title', `Photo ${index + 1}`);
+        dot.addEventListener('click', () => {
+          card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        });
+        dotsContainer.appendChild(dot);
+      }
     });
+
+    // Scroll buttons logic
+    if (prevBtn) {
+      prevBtn.onclick = () => {
+        grid.scrollBy({ left: -300, behavior: 'smooth' });
+      };
+    }
+    if (nextBtn) {
+      nextBtn.onclick = () => {
+        grid.scrollBy({ left: 300, behavior: 'smooth' });
+      };
+    }
+
+    // Active dot update on scroll
+    if (dotsContainer && grid) {
+      grid.addEventListener('scroll', () => {
+        const dots = dotsContainer.querySelectorAll('.gallery-dot');
+        const scrollLeft = grid.scrollLeft;
+        const cardWidth = grid.querySelector('.polaroid-card')?.offsetWidth || 280;
+        const activeIndex = Math.min(
+          dots.length - 1,
+          Math.max(0, Math.round(scrollLeft / (cardWidth + 28)))
+        );
+
+        dots.forEach((d, idx) => {
+          if (idx === activeIndex) {
+            d.classList.add('active');
+          } else {
+            d.classList.remove('active');
+          }
+        });
+      });
+    }
   }
 
   // Render Timeline Tree Items
@@ -286,19 +345,36 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function prefillCustomizerForm(data) {
     if (!data) return;
-    document.getElementById('input-recipient-name').value = data.recipientName || '';
-    document.getElementById('input-main-greeting').value = data.mainGreeting || '';
-    document.getElementById('input-emotional-message').value = data.emotionalMessage || '';
-    document.getElementById('input-cake-wish').value = data.cakeWishText || '';
-    document.getElementById('input-audio-url').value = (data.audio && data.audio.customUrl) || '';
+    const nameInput = document.getElementById('input-recipient-name');
+    if (nameInput) nameInput.value = data.recipientName || '';
+    
+    const landingTitleInput = document.getElementById('input-landing-title');
+    if (landingTitleInput) landingTitleInput.value = data.landingTitle || '';
+
+    const landingBtnInput = document.getElementById('input-landing-btn-text');
+    if (landingBtnInput) landingBtnInput.value = data.landingButtonText || '';
+
+    const mainGreetingInput = document.getElementById('input-main-greeting');
+    if (mainGreetingInput) mainGreetingInput.value = data.mainGreeting || '';
+
+    const emotionalMsgInput = document.getElementById('input-emotional-message');
+    if (emotionalMsgInput) emotionalMsgInput.value = data.emotionalMessage || '';
+
+    const cakeWishInput = document.getElementById('input-cake-wish');
+    if (cakeWishInput) cakeWishInput.value = data.cakeWishText || '';
+
+    const audioUrlInput = document.getElementById('input-audio-url');
+    if (audioUrlInput) audioUrlInput.value = (data.audio && data.audio.customUrl) || '';
   }
 
-  // Form Submit Handler -> Update backend API
+  // Form Submit Handler -> Update backend API & local storage
   if (customizerForm) {
     customizerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
       const newName = document.getElementById('input-recipient-name').value.trim();
+      const newLandingTitle = document.getElementById('input-landing-title') ? document.getElementById('input-landing-title').value.trim() : '';
+      const newLandingBtn = document.getElementById('input-landing-btn-text') ? document.getElementById('input-landing-btn-text').value.trim() : '';
       const newGreeting = document.getElementById('input-main-greeting').value.trim();
       const newMsg = document.getElementById('input-emotional-message').value.trim();
       const newCakeWish = document.getElementById('input-cake-wish').value.trim();
@@ -308,21 +384,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         surpriseData = ApiService.getDefaultFallbackData();
       }
 
-      surpriseData.recipientName = newName || surpriseData.recipientName;
-      surpriseData.mainGreeting = newGreeting || surpriseData.mainGreeting;
-      surpriseData.emotionalMessage = newMsg || surpriseData.emotionalMessage;
-      surpriseData.cakeWishText = newCakeWish || surpriseData.cakeWishText;
+      if (newName) surpriseData.recipientName = newName;
+      if (newLandingTitle) surpriseData.landingTitle = newLandingTitle;
+      if (newLandingBtn) surpriseData.landingButtonText = newLandingBtn;
+      if (newGreeting) surpriseData.mainGreeting = newGreeting;
+      if (newMsg) surpriseData.emotionalMessage = newMsg;
+      if (newCakeWish) surpriseData.cakeWishText = newCakeWish;
       
       if (!surpriseData.audio) surpriseData.audio = {};
       surpriseData.audio.customUrl = newAudioUrl;
 
       try {
-        await ApiService.updateSurpriseData(surpriseData);
+        const res = await ApiService.updateSurpriseData(surpriseData);
+        if (res && res.data) {
+          surpriseData = res.data;
+        }
         renderContent(surpriseData);
         customizerModal.classList.add('hidden');
         showToast('Surprise data updated successfully! ❤️');
       } catch (err) {
-        showToast('Failed to save data to server');
+        console.error('Error saving:', err);
+        renderContent(surpriseData);
+        customizerModal.classList.add('hidden');
+        showToast('Saved locally! ❤️');
       }
     });
   }

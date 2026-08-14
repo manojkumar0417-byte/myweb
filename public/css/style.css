@@ -168,7 +168,7 @@ body {
   position: fixed;
   top: 20px;
   left: 20px;
-  z-index: 100;
+  z-index: 2000;
   display: flex;
   gap: 12px;
 }
