@@ -1065,3 +1065,105 @@
   opacity: 0.9;
 }
 
+/* --------------------------------------------------------------------------
+   8. MIDNIGHT 12:00 COUNTDOWN TIMER WIDGET
+   -------------------------------------------------------------------------- */
+.midnight-countdown-box {
+  margin: 12px auto 25px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 77, 141, 0.35);
+  padding: 16px 20px;
+  border-radius: 20px;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(255, 77, 141, 0.12);
+  max-width: 380px;
+  width: 100%;
+  animation: pulseGlow 3s infinite ease-in-out;
+  box-sizing: border-box;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 77, 141, 0.25); }
+  50% { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 77, 141, 0.55); }
+}
+
+.countdown-badge {
+  font-size: 0.78rem;
+  color: var(--accent-pink);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.timer-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.time-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(145deg, rgba(30, 10, 45, 0.95), rgba(15, 5, 25, 0.98));
+  border: 1px solid rgba(255, 77, 141, 0.45);
+  border-radius: 12px;
+  padding: 8px 12px;
+  min-width: 62px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+}
+
+.time-val {
+  font-family: var(--font-sans);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  background: linear-gradient(135deg, #ffffff, #ff75a0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.time-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.time-sep {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--accent-pink);
+  margin-bottom: 12px;
+  animation: blinkSep 1s infinite;
+}
+
+@keyframes blinkSep {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.countdown-subtext {
+  font-size: 0.92rem;
+  color: #ffc4d6;
+  margin-top: 10px;
+  font-family: 'Dancing Script', cursive;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.countdown-reached {
+  background: linear-gradient(135deg, rgba(255, 26, 109, 0.25), rgba(255, 215, 0, 0.2));
+  border-color: var(--accent-gold);
+}
+

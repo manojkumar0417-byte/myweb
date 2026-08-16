@@ -210,18 +210,114 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  let isSurpriseUnlocked = false;
+
+  // Live Midnight 12:00 AM Countdown Timer
+  function initMidnightCountdown() {
+    const hoursEl = document.getElementById('countdown-hours');
+    const minutesEl = document.getElementById('countdown-minutes');
+    const secondsEl = document.getElementById('countdown-seconds');
+    const statusTextEl = document.getElementById('countdown-status-text');
+    const countdownBoxEl = document.getElementById('midnight-countdown-box');
+    const landingBtnText = document.getElementById('landing-btn-text');
+
+    if (!hoursEl || !minutesEl || !secondsEl) return;
+
+    let celebrated = false;
+
+    function updateTimer() {
+      const now = new Date();
+      // Target next 12:00:00 AM midnight
+      const targetMidnight = new Date(now);
+      targetMidnight.setHours(24, 0, 0, 0);
+
+      const diff = targetMidnight.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        isSurpriseUnlocked = true;
+        hoursEl.textContent = '00';
+        minutesEl.textContent = '00';
+        secondsEl.textContent = '00';
+        if (statusTextEl) {
+          statusTextEl.textContent = "🎉 Countdown Ended! Click Below To Open Shalini Sreya's Surprise! 🎂✨💖";
+        }
+        if (countdownBoxEl) {
+          countdownBoxEl.classList.add('countdown-reached');
+        }
+        if (openSurpriseBtn) {
+          openSurpriseBtn.classList.remove('locked-btn');
+          openSurpriseBtn.classList.add('unlocked-btn');
+        }
+        if (landingBtnText) {
+          landingBtnText.innerHTML = '<i class="fa-solid fa-gift"></i> Open Your Surprise ❤️';
+        }
+        if (!celebrated) {
+          celebrated = true;
+          confettiEngine.burst(180);
+          particleEngine.spawnBalloons(20);
+        }
+        return;
+      }
+
+      // Still counting down -> Keep locked
+      isSurpriseUnlocked = false;
+      if (openSurpriseBtn) {
+        openSurpriseBtn.classList.add('locked-btn');
+        openSurpriseBtn.classList.remove('unlocked-btn');
+      }
+      if (landingBtnText) {
+        landingBtnText.innerHTML = '<i class="fa-solid fa-lock"></i> Unlocks at 12:00 Midnight ⏳';
+      }
+
+      const totalSeconds = Math.floor(diff / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      hoursEl.textContent = String(hours).padStart(2, '0');
+      minutesEl.textContent = String(minutes).padStart(2, '0');
+      secondsEl.textContent = String(seconds).padStart(2, '0');
+
+      if (statusTextEl) {
+        if (hours === 0 && minutes === 0) {
+          statusTextEl.textContent = `⚡ Only ${seconds}s left until surprise button unlocks! 💖`;
+        } else if (hours === 0) {
+          statusTextEl.textContent = `⏳ Only ${minutes}m ${seconds}s left until 12:00 Midnight unlock! ✨`;
+        } else {
+          statusTextEl.textContent = `Surprise button unlocks when countdown ends at 12:00 Midnight 💖`;
+        }
+      }
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  }
+
+  initMidnightCountdown();
+
   // Open Surprise Transition Flow
+  function startSurpriseFlow() {
+    if (!isSurpriseUnlocked) {
+      if (openSurpriseBtn) {
+        openSurpriseBtn.classList.add('shake-lock');
+        setTimeout(() => openSurpriseBtn.classList.remove('shake-lock'), 400);
+      }
+      showToast("🔒 Surprise unlocks after countdown ends at 12:00 Midnight! ✨");
+      return;
+    }
+
+    // Start audio playback
+    audioController.startAudio();
+
+    // Fade out landing card, show countdown overlay
+    landingScreen.classList.add('hidden');
+    countdownOverlay.classList.remove('hidden');
+
+    runCountdownSequence();
+  }
+
   if (openSurpriseBtn) {
-    openSurpriseBtn.addEventListener('click', () => {
-      // Start audio playback
-      audioController.startAudio();
-
-      // Fade out landing card, show countdown overlay
-      landingScreen.classList.add('hidden');
-      countdownOverlay.classList.remove('hidden');
-
-      runCountdownSequence();
-    });
+    openSurpriseBtn.addEventListener('click', startSurpriseFlow);
   }
 
   // Countdown & Typing Sequence
