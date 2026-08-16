@@ -96,7 +96,8 @@ function getDefaultData() {
     ],
     cakeWishText: "Make a wish and blow out the candles! May all your dreams come true ✨",
     finalSectionTitle: "You are very special to me ❤️",
-    finalSectionMessage: "No words in any language could ever fully express how much happiness you bring into my life. Happy Birthday my love! Today, tomorrow, and forever."
+    finalSectionMessage: "No words in any language could ever fully express how much happiness you bring into my life. Happy Birthday my love! Today, tomorrow, and forever.",
+    secretVideoUrl: "videos/secret.mp4"
   };
 }
 
@@ -216,7 +217,8 @@ app.post('/api/reset', (req, res) => {
     ],
     cakeWishText: "Make a wish and blow out the candles! May all your dreams come true ✨",
     finalSectionTitle: "You are very special to me ❤️",
-    finalSectionMessage: "No words in any language could ever fully express how much happiness you bring into my life. Happy Birthday my love! Today, tomorrow, and forever."
+    finalSectionMessage: "No words in any language could ever fully express how much happiness you bring into my life. Happy Birthday my love! Today, tomorrow, and forever.",
+    secretVideoUrl: "videos/secret.mp4"
   };
 
   fs.writeFile(DATA_FILE, JSON.stringify(defaultData, null, 2), 'utf8', (err) => {

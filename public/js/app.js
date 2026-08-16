@@ -345,11 +345,60 @@ document.addEventListener('DOMContentLoaded', async () => {
   const secretVideoModal = document.getElementById('secret-video-modal');
   const secretVideoCloseBtn = document.getElementById('secret-video-close-btn');
   const secretVideoIframe = document.getElementById('secret-video-iframe');
+  const secretVideoPlayer = document.getElementById('secret-video-player');
+
+  function stopSecretVideo() {
+    if (secretVideoPlayer) {
+      secretVideoPlayer.pause();
+      secretVideoPlayer.currentTime = 0;
+      secretVideoPlayer.src = '';
+      secretVideoPlayer.style.display = 'none';
+    }
+    if (secretVideoIframe) {
+      secretVideoIframe.src = '';
+      secretVideoIframe.style.display = 'none';
+    }
+  }
+
+  function playSecretVideo(videoUrl) {
+    if (!videoUrl) {
+      videoUrl = 'videos/secret.mp4';
+    }
+    const isEmbedOrYoutube = videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be') || videoUrl.includes('vimeo.com') || videoUrl.includes('embed');
+
+    if (isEmbedOrYoutube) {
+      if (secretVideoPlayer) {
+        secretVideoPlayer.pause();
+        secretVideoPlayer.style.display = 'none';
+      }
+      if (secretVideoIframe) {
+        secretVideoIframe.src = videoUrl;
+        secretVideoIframe.style.display = 'block';
+      }
+    } else {
+      // Local video or direct video file (mp4, webm, etc.)
+      if (secretVideoIframe) {
+        secretVideoIframe.src = '';
+        secretVideoIframe.style.display = 'none';
+      }
+      if (secretVideoPlayer) {
+        secretVideoPlayer.src = videoUrl;
+        secretVideoPlayer.style.display = 'block';
+        secretVideoPlayer.load();
+        const playPromise = secretVideoPlayer.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(err => {
+            console.log('Video autoplay prevented or source not loaded yet:', err);
+          });
+        }
+      }
+    }
+  }
 
   if (secretHeartBtn) {
     secretHeartBtn.addEventListener('click', () => {
-      const videoUrl = (surpriseData && surpriseData.secretVideoUrl) || '';
-      if (secretVideoIframe) secretVideoIframe.src = videoUrl;
+      const videoUrl = (surpriseData && surpriseData.secretVideoUrl) || 'videos/secret.mp4';
+      playSecretVideo(videoUrl);
       loveNoteModal.classList.add('hidden');
       if (secretVideoModal) secretVideoModal.classList.remove('hidden');
       confettiEngine.burst(60);
@@ -359,7 +408,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   if (secretVideoCloseBtn) {
     secretVideoCloseBtn.addEventListener('click', () => {
-      if (secretVideoIframe) secretVideoIframe.src = ''; // stop video
+      stopSecretVideo();
       secretVideoModal.classList.add('hidden');
       // Resume background music after video closes
       audioController.startAudio();
@@ -368,7 +417,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (secretVideoModal) {
     secretVideoModal.addEventListener('click', (e) => {
       if (e.target === secretVideoModal) {
-        if (secretVideoIframe) secretVideoIframe.src = '';
+        stopSecretVideo();
         secretVideoModal.classList.add('hidden');
         // Resume background music after video closes
         audioController.startAudio();
@@ -406,6 +455,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const audioUrlInput = document.getElementById('input-audio-url');
     if (audioUrlInput) audioUrlInput.value = (data.audio && data.audio.customUrl) || '';
+
+    const videoUrlInput = document.getElementById('input-video-url');
+    if (videoUrlInput) videoUrlInput.value = data.secretVideoUrl || '';
   }
 
   // Form Submit Handler -> Update backend API & local storage
@@ -420,6 +472,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const newMsg = document.getElementById('input-emotional-message').value.trim();
       const newCakeWish = document.getElementById('input-cake-wish').value.trim();
       const newAudioUrl = document.getElementById('input-audio-url').value.trim();
+      const newVideoUrl = document.getElementById('input-video-url') ? document.getElementById('input-video-url').value.trim() : '';
 
       if (!surpriseData) {
         surpriseData = ApiService.getDefaultFallbackData();
@@ -434,6 +487,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       if (!surpriseData.audio) surpriseData.audio = {};
       surpriseData.audio.customUrl = newAudioUrl;
+
+      if (newVideoUrl) surpriseData.secretVideoUrl = newVideoUrl;
 
       try {
         const res = await ApiService.updateSurpriseData(surpriseData);
