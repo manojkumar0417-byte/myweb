@@ -227,9 +227,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function updateTimer() {
       const now = new Date();
-      // Target next 12:00:00 AM midnight
-      const targetMidnight = new Date(now);
-      targetMidnight.setHours(24, 0, 0, 0);
+      // Target 12:00:00 AM Midnight (August 17, 2026)
+      const targetMidnight = new Date(2026, 7, 17, 0, 0, 0);
 
       const diff = targetMidnight.getTime() - now.getTime();
 
@@ -239,7 +238,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         minutesEl.textContent = '00';
         secondsEl.textContent = '00';
         if (statusTextEl) {
-          statusTextEl.textContent = "🎉 Countdown Ended! Click Below To Open Shalini Sreya's Surprise! 🎂✨💖";
+          statusTextEl.textContent = "🎉 It's 12:00 AM! Happy Birthday Shalini Sreya! Click Below To Open! 🎂✨💖";
         }
         if (countdownBoxEl) {
           countdownBoxEl.classList.add('countdown-reached');
